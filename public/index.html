@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending Bot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url('img/1.png'); /* Optional background image */
+        background-size: cover;
+        background-color: #14171a; /* Dark background */
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #1c1f23; /* Dark background for the container */
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Deeper shadow for a more pronounced effect */
+        overflow: hidden;
+    }
+    
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #ffffff; /* White text for headings */
+    }
+    
+    label {
+        font-weight: bold;
+        margin-top: 10px;
+        display: block;
+        color: #e1e8ed; /* Light gray for labels */
+    }
+    
+    textarea, input[type="number"], input[type="datetime-local"], button {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: 1px solid #444; /* Darker border for inputs */
+        background-color: #2a2d30; /* Darker background for inputs */
+        color: #ffffff; /* White text for inputs */
+        font-size: 14px;
+    }
+    
+    button {
+        background-color: #1da1f2; /* Twitter blue */
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    button:hover {
+        background-color: #1991db; /* Darker blue on hover */
+    }
+    
+    #status-message {
+        margin-top: 20px;
+        font-weight: bold;
+        text-align: center;
+        color: #1da1f2; /* Match button color for consistency */
+    }
+    
+    /* Responsive styling */
+    @media only screen and (max-width: 600px) {
+        .container {
+            padding: 15px; /* Adjusted padding for smaller screens */
+        }
+    
+        button {
+            font-size: 16px; /* Larger font size for buttons on smaller screens */
+        }
+    }
+    
+    </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Twitter Bot - Schedule Your Tweets</h1>
+
+    <form id="bot-form">
+      <label for="tweets">Enter your tweets (one per line):</label>
+      <textarea id="tweets" name="tweets" rows="10" placeholder="Paste your tweets here..."></textarea>
+
+      <label for="interval">Set interval between tweets (in minutes):</label>
+      <input type="number" id="interval" name="interval" placeholder="Enter interval in minutes" min="1" required>
+
+      <label for="start-time">Set the bot start time:</label>
+      <input type="datetime-local" id="start-time" name="start-time" required>
+
+      <button type="submit">Start Bot</button>
+    </form>
+
+    <div id="status-message"></div>
+  </div>
+
+  <script>
+    document.getElementById('bot-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const tweets = document.getElementById('tweets').value.split('\n').filter(tweet => tweet.trim() !== '');
+      const interval = document.getElementById('interval').value;
+      const startTime = new Date(document.getElementById('start-time').value).getTime();
+
+      const data = {
+        tweets,
+        interval,
+        startTime
+      };
+
+      fetch('/start-bot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('status-message').innerText = data.message;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
+</html>
